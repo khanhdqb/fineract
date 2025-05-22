@@ -65,7 +65,7 @@ public class LoanTest {
      */
     @Test
     public void testGetChargesWithCharges() {
-        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
         ThreadLocalContextUtil.setBusinessDates(new HashMap<>(Map.of(BusinessDateType.BUSINESS_DATE, actualDate)));
 
         Loan loan = new Loan();

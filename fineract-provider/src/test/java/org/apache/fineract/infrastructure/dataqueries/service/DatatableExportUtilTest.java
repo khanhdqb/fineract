@@ -33,7 +33,7 @@ public class DatatableExportUtilTest {
 
     @BeforeEach
     public void setUp() {
-        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
     }
 
     @AfterEach

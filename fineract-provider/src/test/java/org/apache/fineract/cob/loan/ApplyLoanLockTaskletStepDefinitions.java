@@ -70,7 +70,7 @@ public class ApplyLoanLockTaskletStepDefinitions implements En {
 
     public ApplyLoanLockTaskletStepDefinitions() {
         Given("/^The ApplyLoanLockTasklet.execute method with action (.*)$/", (String action) -> {
-            ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+            ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
             HashMap<BusinessDateType, LocalDate> businessDateMap = new HashMap<>();
             businessDateMap.put(BusinessDateType.COB_DATE, LocalDate.now(ZoneId.systemDefault()));
             ThreadLocalContextUtil.setBusinessDates(businessDateMap);

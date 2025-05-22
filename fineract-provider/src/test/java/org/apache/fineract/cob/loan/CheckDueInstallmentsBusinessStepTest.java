@@ -62,7 +62,7 @@ public class CheckDueInstallmentsBusinessStepTest {
      */
     @BeforeEach
     public void setUp() {
-        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
         ThreadLocalContextUtil.setActionContext(ActionContext.DEFAULT);
         ThreadLocalContextUtil.setBusinessDates(new HashMap<>(Map.of(BusinessDateType.BUSINESS_DATE, LocalDate.parse("2024-01-16"),
                 BusinessDateType.COB_DATE, LocalDate.parse("2024-01-15"))));

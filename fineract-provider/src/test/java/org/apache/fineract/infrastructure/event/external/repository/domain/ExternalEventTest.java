@@ -40,7 +40,7 @@ class ExternalEventTest {
     public void testConstructorWorks() {
         // given
         LocalDate currentBusinessDate = LocalDate.of(2022, 6, 12);
-        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
         ThreadLocalContextUtil.setBusinessDates(new HashMap<>(Map.of(BusinessDateType.BUSINESS_DATE, currentBusinessDate)));
 
         String type = "type";

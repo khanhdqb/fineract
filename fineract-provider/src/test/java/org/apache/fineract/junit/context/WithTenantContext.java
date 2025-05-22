@@ -18,7 +18,7 @@
  */
 package org.apache.fineract.junit.context;
 
-import static org.apache.fineract.util.TimeZoneConstants.ASIA_KOLKATA_ID;
+import static org.apache.fineract.util.TimeZoneConstants.ASIA_Ho_Chi_Minh_ID;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -31,5 +31,5 @@ public @interface WithTenantContext {
 
     String tenantName() default "default";
 
-    String tenantTimeZoneId() default ASIA_KOLKATA_ID;
+    String tenantTimeZoneId() default ASIA_Ho_Chi_Minh_ID;
 }

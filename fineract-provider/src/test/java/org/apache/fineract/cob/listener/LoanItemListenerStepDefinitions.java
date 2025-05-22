@@ -57,7 +57,7 @@ public class LoanItemListenerStepDefinitions implements En {
 
     public LoanItemListenerStepDefinitions() {
         Given("/^The LoanItemListener.onReadError method (.*)$/", (String action) -> {
-            ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+            ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
             exception = new LoanReadException(1L, new RuntimeException("fail"));
             loanAccountLock = new LoanAccountLock(1L, LockOwner.LOAN_COB_CHUNK_PROCESSING, LocalDate.now(ZoneId.systemDefault()));
             when(loanLockingService.findByLoanIdAndLockOwner(1L, LockOwner.LOAN_COB_CHUNK_PROCESSING)).thenReturn(loanAccountLock);
@@ -82,7 +82,7 @@ public class LoanItemListenerStepDefinitions implements En {
         });
 
         Given("/^The LoanItemListener.onProcessError method (.*)$/", (String action) -> {
-            ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+            ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
             exception = new LoanReadException(1L, new RuntimeException("fail"));
             loanAccountLock = new LoanAccountLock(2L, LockOwner.LOAN_COB_CHUNK_PROCESSING, LocalDate.now(ZoneId.systemDefault()));
             when(loanLockingService.findByLoanIdAndLockOwner(2L, LockOwner.LOAN_COB_CHUNK_PROCESSING)).thenReturn(loanAccountLock);
@@ -107,7 +107,7 @@ public class LoanItemListenerStepDefinitions implements En {
         });
 
         Given("/^The LoanItemListener.onWriteError method (.*)$/", (String action) -> {
-            ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+            ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
             exception = new LoanReadException(3L, new RuntimeException("fail"));
             loanAccountLock = new LoanAccountLock(3L, LockOwner.LOAN_COB_CHUNK_PROCESSING, LocalDate.now(ZoneId.systemDefault()));
             when(loanLockingService.findByLoanIdAndLockOwner(3L, LockOwner.LOAN_COB_CHUNK_PROCESSING)).thenReturn(loanAccountLock);

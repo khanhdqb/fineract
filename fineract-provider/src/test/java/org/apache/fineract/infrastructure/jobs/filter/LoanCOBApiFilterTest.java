@@ -167,7 +167,7 @@ class LoanCOBApiFilterTest {
         MockHttpServletResponse response = mock(MockHttpServletResponse.class);
         FilterChain filterChain = mock(FilterChain.class);
         AppUser appUser = mock(AppUser.class);
-        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
         HashMap<BusinessDateType, LocalDate> businessDates = new HashMap<>();
         LocalDate businessDate = LocalDate.now(ZoneId.systemDefault());
         businessDates.put(BusinessDateType.BUSINESS_DATE, businessDate);
@@ -214,7 +214,7 @@ class LoanCOBApiFilterTest {
         MockHttpServletResponse response = mock(MockHttpServletResponse.class);
         FilterChain filterChain = mock(FilterChain.class);
         AppUser appUser = mock(AppUser.class);
-        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
         HashMap<BusinessDateType, LocalDate> businessDates = new HashMap<>();
         LocalDate businessDate = LocalDate.now(ZoneId.systemDefault());
         businessDates.put(BusinessDateType.BUSINESS_DATE, businessDate);
@@ -243,7 +243,7 @@ class LoanCOBApiFilterTest {
         MockHttpServletResponse response = mock(MockHttpServletResponse.class);
         FilterChain filterChain = mock(FilterChain.class);
         AppUser appUser = mock(AppUser.class);
-        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
         HashMap<BusinessDateType, LocalDate> businessDates = new HashMap<>();
         LocalDate businessDate = LocalDate.now(ZoneId.systemDefault());
         businessDates.put(BusinessDateType.BUSINESS_DATE, businessDate);
@@ -273,7 +273,7 @@ class LoanCOBApiFilterTest {
         MockHttpServletResponse response = mock(MockHttpServletResponse.class);
         FilterChain filterChain = mock(FilterChain.class);
         AppUser appUser = mock(AppUser.class);
-        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
         HashMap<BusinessDateType, LocalDate> businessDates = new HashMap<>();
         LocalDate businessDate = LocalDate.now(ZoneId.systemDefault());
         businessDates.put(BusinessDateType.BUSINESS_DATE, businessDate);
@@ -305,7 +305,7 @@ class LoanCOBApiFilterTest {
         FilterChain filterChain = mock(FilterChain.class);
         AppUser appUser = mock(AppUser.class);
 
-        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
         HashMap<BusinessDateType, LocalDate> businessDates = new HashMap<>();
         LocalDate businessDate = LocalDate.now(ZoneId.systemDefault());
         businessDates.put(BusinessDateType.BUSINESS_DATE, businessDate);
@@ -339,7 +339,7 @@ class LoanCOBApiFilterTest {
         FilterChain filterChain = mock(FilterChain.class);
         AppUser appUser = mock(AppUser.class);
 
-        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
         HashMap<BusinessDateType, LocalDate> businessDates = new HashMap<>();
         LocalDate businessDate = LocalDate.now(ZoneId.systemDefault());
         businessDates.put(BusinessDateType.BUSINESS_DATE, businessDate);

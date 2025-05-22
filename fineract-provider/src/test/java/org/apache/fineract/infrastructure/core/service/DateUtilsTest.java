@@ -40,7 +40,7 @@ public class DateUtilsTest {
 
     @BeforeEach
     public void init() {
-        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
         ThreadLocalContextUtil.setBusinessDates(new HashMap<>(Map.of(BusinessDateType.BUSINESS_DATE, LocalDate.of(2022, 6, 12))));
     }
 
@@ -57,22 +57,22 @@ public class DateUtilsTest {
 
     @Test
     public void getDateTimeZoneOfTenant() {
-        assertEquals(ZoneId.of("Asia/Kolkata"), DateUtils.getDateTimeZoneOfTenant());
+        assertEquals(ZoneId.of("Asia/Ho_Chi_Minh"), DateUtils.getDateTimeZoneOfTenant());
     }
 
     @Test
     public void getLocalDateOfTenant() {
-        assertTrue(DateUtils.isEqualTenantDate(LocalDate.now(ZoneId.of("Asia/Kolkata"))));
+        assertTrue(DateUtils.isEqualTenantDate(LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"))));
     }
 
     @Test
     public void getLocalDateTimeOfTenant() {
-        assertTrue(DateUtils.isEqualTenantDateTime(LocalDateTime.now(ZoneId.of("Asia/Kolkata")), ChronoUnit.SECONDS));
+        assertTrue(DateUtils.isEqualTenantDateTime(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")), ChronoUnit.SECONDS));
     }
 
     @Test
     public void getOffsetDateTimeOfTenant() {
-        assertTrue(DateUtils.isEqualTenantDateTime(OffsetDateTime.now(ZoneId.of("Asia/Kolkata")), ChronoUnit.SECONDS));
+        assertTrue(DateUtils.isEqualTenantDateTime(OffsetDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")), ChronoUnit.SECONDS));
     }
 
     @Test

@@ -31,7 +31,7 @@
 
 |fineract.tenant.timezone
 |FINERACT_DEFAULT_TENANTDB_TIMEZONE
-|Asia/Kolkata
+|Asia/Ho_Chi_Minh
 |This property sets the timezone of the default tenant
 
 |fineract.tenant.identifier

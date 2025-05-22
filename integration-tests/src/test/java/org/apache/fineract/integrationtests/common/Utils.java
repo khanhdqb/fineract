@@ -83,7 +83,7 @@ public final class Utils {
     public static final String DEFAULT_TENANT = ConfigProperties.Backend.TENANT;
     public static final String TENANT_IDENTIFIER = TENANT_PARAM_NAME + '=' + DEFAULT_TENANT;
     private static final String LOGIN_URL = "/fineract-provider/api/v1/authentication?" + TENANT_IDENTIFIER;
-    public static final String TENANT_TIME_ZONE = "Asia/Kolkata";
+    public static final String TENANT_TIME_ZONE = "Asia/Ho_Chi_Minh";
     public static final String DATE_FORMAT = "dd MMMM yyyy";
     public static final String DATE_TIME_FORMAT = "dd MMMM yyyy HH:mm";
     public static final DateTimeFormatter dateFormatter = new DateTimeFormatterBuilder().appendPattern(DATE_FORMAT).toFormatter();

@@ -83,7 +83,7 @@ class InlineLoanCOBExecutorServiceImplTest {
     void shouldExceptionThrownIfLoanIsAlreadyLocked() {
         JsonCommand command = mock(JsonCommand.class);
         LoanIdAndLastClosedBusinessDate loan = mock(LoanIdAndLastClosedBusinessDate.class);
-        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
         HashMap<BusinessDateType, LocalDate> businessDates = new HashMap<>();
         LocalDate businessDate = LocalDate.now(ZoneId.systemDefault());
         businessDates.put(BusinessDateType.BUSINESS_DATE, businessDate);
@@ -107,7 +107,7 @@ class InlineLoanCOBExecutorServiceImplTest {
         LoanIdAndLastClosedBusinessDate loan1 = mock(LoanIdAndLastClosedBusinessDate.class);
         LoanIdAndLastClosedBusinessDate loan2 = mock(LoanIdAndLastClosedBusinessDate.class);
         LoanIdAndLastClosedBusinessDate loan3 = mock(LoanIdAndLastClosedBusinessDate.class);
-        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Kolkata", null));
+        ThreadLocalContextUtil.setTenant(new FineractPlatformTenant(1L, "default", "Default", "Asia/Ho_Chi_Minh", null));
         HashMap<BusinessDateType, LocalDate> businessDates = new HashMap<>();
         LocalDate businessDate = LocalDate.now(ZoneId.systemDefault());
         businessDates.put(BusinessDateType.BUSINESS_DATE, businessDate);

@@ -20,7 +20,7 @@ package org.apache.fineract.util;
 
 public final class TimeZoneConstants {
 
-    public static final String ASIA_KOLKATA_ID = "Asia/Kolkata";
+    public static final String ASIA_Ho_Chi_Minh_ID = "Asia/Ho_Chi_Minh";
     public static final String ASIA_MANILA_ID = "Asia/Manila";
     public static final String EUROPE_BERLIN_ID = "Europe/Berlin";
 

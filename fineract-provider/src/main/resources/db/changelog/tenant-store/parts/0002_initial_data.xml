@@ -1205,7 +1205,7 @@
         <insert tableName="timezones">
             <column name="id" valueNumeric="194"/>
             <column name="country_code" value="IN"/>
-            <column name="timezonename" value="Asia/Kolkata"/>
+            <column name="timezonename" value="Asia/Ho_Chi_Minh"/>
             <column name="comments" value=""/>
         </insert>
         <insert tableName="timezones">
