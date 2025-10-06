@@ -40,7 +40,7 @@ import org.apache.fineract.batch.command.internal.CreateTransactionLoanCommandSt
 import org.apache.fineract.batch.domain.BatchRequest;
 import org.apache.fineract.batch.domain.BatchResponse;
 import org.apache.fineract.client.models.AdvancedPaymentData;
-import org.apache.fineract.client.models.BusinessDateRequest;
+import org.apache.fineract.client.models.BusinessDateUpdateRequest;
 import org.apache.fineract.client.models.ChargeRequest;
 import org.apache.fineract.client.models.GetLoansLoanIdLoanChargeData;
 import org.apache.fineract.client.models.GetLoansLoanIdResponse;
@@ -57,7 +57,6 @@ import org.apache.fineract.client.models.PostLoansLoanIdTransactionsResponse;
 import org.apache.fineract.client.models.PostLoansLoanIdTransactionsTransactionIdRequest;
 import org.apache.fineract.client.models.PostLoansRequest;
 import org.apache.fineract.client.models.PostLoansResponse;
-import org.apache.fineract.infrastructure.businessdate.domain.BusinessDateType;
 import org.apache.fineract.integrationtests.common.BatchHelper;
 import org.apache.fineract.integrationtests.common.BusinessDateHelper;
 import org.apache.fineract.integrationtests.common.ClientHelper;
@@ -906,7 +905,7 @@ public class LoanTransactionInterestPaymentWaiverTest extends BaseLoanIntegratio
                     0.0, 0.0, 0.0);
             assertTrue(loanDetails.getStatus().getActive());
 
-            businessDateHelper.updateBusinessDate(new BusinessDateRequest().type(BusinessDateType.BUSINESS_DATE.getName())
+            businessDateHelper.updateBusinessDate(new BusinessDateUpdateRequest().type(BusinessDateUpdateRequest.TypeEnum.BUSINESS_DATE)
                     .date("2023.09.16").dateFormat("yyyy.MM.dd").locale("en"));
 
             loanTransactionHelper.makeLoanRepayment(loanResponse.getLoanId(), new PostLoansLoanIdTransactionsRequest()
@@ -1013,7 +1012,7 @@ public class LoanTransactionInterestPaymentWaiverTest extends BaseLoanIntegratio
                     0.0, 0.0, 0.0);
             assertTrue(loanDetails.getStatus().getActive());
 
-            businessDateHelper.updateBusinessDate(new BusinessDateRequest().type(BusinessDateType.BUSINESS_DATE.getName())
+            businessDateHelper.updateBusinessDate(new BusinessDateUpdateRequest().type(BusinessDateUpdateRequest.TypeEnum.BUSINESS_DATE)
                     .date("2023.09.16").dateFormat("yyyy.MM.dd").locale("en"));
 
             loanTransactionHelper.makeLoanRepayment(loanResponse.getLoanId(), new PostLoansLoanIdTransactionsRequest()
@@ -1748,19 +1747,19 @@ public class LoanTransactionInterestPaymentWaiverTest extends BaseLoanIntegratio
 
     private static void validateLoanTransaction(GetLoansLoanIdResponse loanDetails, int index, double transactionAmount,
             double principalPortion, double overPaidPortion, double loanBalance) {
-        assertEquals(transactionAmount, loanDetails.getTransactions().get(index).getAmount());
-        assertEquals(principalPortion, loanDetails.getTransactions().get(index).getPrincipalPortion());
-        assertEquals(overPaidPortion, loanDetails.getTransactions().get(index).getOverpaymentPortion());
-        assertEquals(loanBalance, loanDetails.getTransactions().get(index).getOutstandingLoanBalance());
+        assertEquals(transactionAmount, Utils.getDoubleValue(loanDetails.getTransactions().get(index).getAmount()));
+        assertEquals(principalPortion, Utils.getDoubleValue(loanDetails.getTransactions().get(index).getPrincipalPortion()));
+        assertEquals(overPaidPortion, Utils.getDoubleValue(loanDetails.getTransactions().get(index).getOverpaymentPortion()));
+        assertEquals(loanBalance, Utils.getDoubleValue(loanDetails.getTransactions().get(index).getOutstandingLoanBalance()));
     }
 
     private void validateLoanCharge(GetLoansLoanIdResponse loanDetails, int index, LocalDate dueDate, double charged, double paid,
             double outstanding) {
         GetLoansLoanIdLoanChargeData chargeData = loanDetails.getCharges().get(index);
         assertEquals(dueDate, chargeData.getDueDate());
-        assertEquals(charged, chargeData.getAmount());
-        assertEquals(paid, chargeData.getAmountPaid());
-        assertEquals(outstanding, chargeData.getAmountOutstanding());
+        assertEquals(charged, Utils.getDoubleValue(chargeData.getAmount()));
+        assertEquals(paid, Utils.getDoubleValue(chargeData.getAmountPaid()));
+        assertEquals(outstanding, Utils.getDoubleValue(chargeData.getAmountOutstanding()));
     }
 
 }

@@ -169,10 +169,11 @@ public class LoanAccountChargeReveseReplayWithAdvancedPaymentAllocationTest exte
             assertNotNull(loanDetails.getRepaymentSchedule());
             assertNotNull(loanDetails.getRepaymentSchedule().getPeriods());
             assertEquals(2, loanDetails.getRepaymentSchedule().getPeriods().size());
-            assertEquals(20.0, loanDetails.getRepaymentSchedule().getPeriods().get(1).getPenaltyChargesOutstanding());
-            assertEquals(10.0, loanDetails.getRepaymentSchedule().getPeriods().get(1).getFeeChargesOutstanding());
-            assertEquals(900.0, loanDetails.getRepaymentSchedule().getPeriods().get(1).getPrincipalOutstanding());
-            assertEquals(930.0, loanDetails.getRepaymentSchedule().getPeriods().get(1).getTotalOutstandingForPeriod());
+            assertEquals(20.0, Utils.getDoubleValue(loanDetails.getRepaymentSchedule().getPeriods().get(1).getPenaltyChargesOutstanding()));
+            assertEquals(10.0, Utils.getDoubleValue(loanDetails.getRepaymentSchedule().getPeriods().get(1).getFeeChargesOutstanding()));
+            assertEquals(900.0, Utils.getDoubleValue(loanDetails.getRepaymentSchedule().getPeriods().get(1).getPrincipalOutstanding()));
+            assertEquals(930.0,
+                    Utils.getDoubleValue(loanDetails.getRepaymentSchedule().getPeriods().get(1).getTotalOutstandingForPeriod()));
         });
     }
 
@@ -212,10 +213,11 @@ public class LoanAccountChargeReveseReplayWithAdvancedPaymentAllocationTest exte
             assertNotNull(loanDetails.getRepaymentSchedule());
             assertNotNull(loanDetails.getRepaymentSchedule().getPeriods());
             assertEquals(2, loanDetails.getRepaymentSchedule().getPeriods().size());
-            assertEquals(0.0, loanDetails.getRepaymentSchedule().getPeriods().get(1).getPenaltyChargesOutstanding());
-            assertEquals(0.0, loanDetails.getRepaymentSchedule().getPeriods().get(1).getFeeChargesOutstanding());
-            assertEquals(930.0, loanDetails.getRepaymentSchedule().getPeriods().get(1).getPrincipalOutstanding());
-            assertEquals(930.0, loanDetails.getRepaymentSchedule().getPeriods().get(1).getTotalOutstandingForPeriod());
+            assertEquals(0.0, Utils.getDoubleValue(loanDetails.getRepaymentSchedule().getPeriods().get(1).getPenaltyChargesOutstanding()));
+            assertEquals(0.0, Utils.getDoubleValue(loanDetails.getRepaymentSchedule().getPeriods().get(1).getFeeChargesOutstanding()));
+            assertEquals(930.0, Utils.getDoubleValue(loanDetails.getRepaymentSchedule().getPeriods().get(1).getPrincipalOutstanding()));
+            assertEquals(930.0,
+                    Utils.getDoubleValue(loanDetails.getRepaymentSchedule().getPeriods().get(1).getTotalOutstandingForPeriod()));
         });
     }
 
@@ -257,10 +259,11 @@ public class LoanAccountChargeReveseReplayWithAdvancedPaymentAllocationTest exte
             assertNotNull(loanDetails.getRepaymentSchedule());
             assertNotNull(loanDetails.getRepaymentSchedule().getPeriods());
             assertEquals(2, loanDetails.getRepaymentSchedule().getPeriods().size());
-            assertEquals(0.0, loanDetails.getRepaymentSchedule().getPeriods().get(1).getPenaltyChargesOutstanding());
-            assertEquals(0.0, loanDetails.getRepaymentSchedule().getPeriods().get(1).getFeeChargesOutstanding());
-            assertEquals(930.0, loanDetails.getRepaymentSchedule().getPeriods().get(1).getPrincipalOutstanding());
-            assertEquals(930.0, loanDetails.getRepaymentSchedule().getPeriods().get(1).getTotalOutstandingForPeriod());
+            assertEquals(0.0, Utils.getDoubleValue(loanDetails.getRepaymentSchedule().getPeriods().get(1).getPenaltyChargesOutstanding()));
+            assertEquals(0.0, Utils.getDoubleValue(loanDetails.getRepaymentSchedule().getPeriods().get(1).getFeeChargesOutstanding()));
+            assertEquals(930.0, Utils.getDoubleValue(loanDetails.getRepaymentSchedule().getPeriods().get(1).getPrincipalOutstanding()));
+            assertEquals(930.0,
+                    Utils.getDoubleValue(loanDetails.getRepaymentSchedule().getPeriods().get(1).getTotalOutstandingForPeriod()));
         });
     }
 
@@ -308,10 +311,10 @@ public class LoanAccountChargeReveseReplayWithAdvancedPaymentAllocationTest exte
             assertNotNull(loanDetails.getRepaymentSchedule());
             assertNotNull(loanDetails.getRepaymentSchedule().getPeriods());
             assertEquals(2, loanDetails.getRepaymentSchedule().getPeriods().size());
-            assertEquals(0.0, loanDetails.getRepaymentSchedule().getPeriods().get(1).getPenaltyChargesOutstanding());
-            assertEquals(0.0, loanDetails.getRepaymentSchedule().getPeriods().get(1).getFeeChargesOutstanding());
-            assertEquals(0.0, loanDetails.getRepaymentSchedule().getPeriods().get(1).getPrincipalOutstanding());
-            assertEquals(0.0, loanDetails.getRepaymentSchedule().getPeriods().get(1).getTotalOutstandingForPeriod());
+            assertEquals(0.0, Utils.getDoubleValue(loanDetails.getRepaymentSchedule().getPeriods().get(1).getPenaltyChargesOutstanding()));
+            assertEquals(0.0, Utils.getDoubleValue(loanDetails.getRepaymentSchedule().getPeriods().get(1).getFeeChargesOutstanding()));
+            assertEquals(0.0, Utils.getDoubleValue(loanDetails.getRepaymentSchedule().getPeriods().get(1).getPrincipalOutstanding()));
+            assertEquals(0.0, Utils.getDoubleValue(loanDetails.getRepaymentSchedule().getPeriods().get(1).getTotalOutstandingForPeriod()));
 
             // adding an extra charge after maturity
             updateBusinessDate("11 October 2022");
@@ -333,7 +336,7 @@ public class LoanAccountChargeReveseReplayWithAdvancedPaymentAllocationTest exte
 
         String loanApplicationJSON = new LoanApplicationTestBuilder().withPrincipal("1000").withLoanTermFrequency("30")
                 .withLoanTermFrequencyAsDays().withNumberOfRepayments("1").withRepaymentEveryAfter("30").withRepaymentFrequencyTypeAsDays()
-                .withInterestRatePerPeriod("0").withInterestTypeAsFlatBalance().withAmortizationTypeAsEqualPrincipalPayments()
+                .withInterestRatePerPeriod("0").withInterestTypeAsDecliningBalance().withAmortizationTypeAsEqualPrincipalPayments()
                 .withInterestCalculationPeriodTypeSameAsRepaymentPeriod().withExpectedDisbursementDate("03 September 2022")
                 .withSubmittedOnDate("01 September 2022").withLoanType("individual").withExternalId(externalId)
                 .withRepaymentStrategy(advancedPaymentStrategy ? "advanced-payment-allocation-strategy" : "mifos-standard-strategy")

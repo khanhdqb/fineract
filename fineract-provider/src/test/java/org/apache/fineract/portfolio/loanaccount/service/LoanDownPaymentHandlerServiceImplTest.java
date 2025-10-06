@@ -117,6 +117,9 @@ public class LoanDownPaymentHandlerServiceImplTest {
     @Mock
     private LoanTransactionService loanTransactionService;
 
+    @Mock
+    private LoanJournalEntryPoster loanJournalEntryPoster;
+
     private LoanDownPaymentHandlerServiceImpl underTest;
 
     @BeforeEach
@@ -124,7 +127,7 @@ public class LoanDownPaymentHandlerServiceImplTest {
         underTest = new LoanDownPaymentHandlerServiceImpl(loanTransactionRepository, businessEventNotifierService,
                 loanDownPaymentTransactionValidator, loanScheduleService, loanRefundService, loanRefundValidator,
                 reprocessLoanTransactionsService, loanTransactionProcessingService, loanLifecycleStateMachine, loanBalanceService,
-                loanTransactionService);
+                loanTransactionService, loanJournalEntryPoster);
         moneyHelper.when(MoneyHelper::getMathContext).thenReturn(new MathContext(12, RoundingMode.UP));
         moneyHelper.when(MoneyHelper::getRoundingMode).thenReturn(RoundingMode.UP);
         tempConfigServiceMock.when(TemporaryConfigurationServiceContainer::isExternalIdAutoGenerationEnabled).thenReturn(true);
@@ -160,15 +163,15 @@ public class LoanDownPaymentHandlerServiceImplTest {
         when(downPaymentMoney.getCurrencyCode()).thenReturn(loanCurrency.getCode());
         when(overPaymentPortionMoney.getCurrencyCode()).thenReturn(loanCurrency.getCode());
 
+        when(loanRepaymentRelatedDetail.getInstallmentAmountInMultiplesOf()).thenReturn(10);
         when(loanForProcessing.getLoanRepaymentScheduleDetail()).thenReturn(loanRepaymentRelatedDetail);
-        when(loanForProcessing.repaymentScheduleDetail()).thenReturn(loanRepaymentRelatedDetail);
+        when(loanForProcessing.getLoanProductRelatedDetail()).thenReturn(loanRepaymentRelatedDetail);
         when(loanRepaymentRelatedDetail.isInterestRecalculationEnabled()).thenReturn(true);
         when(loanForProcessing.isInterestBearingAndInterestRecalculationEnabled()).thenReturn(true);
         when(loanRepaymentRelatedDetail.getDisbursedAmountPercentageForDownPayment()).thenReturn(BigDecimal.valueOf(10));
         when(loanForProcessing.getCurrency()).thenReturn(loanCurrency);
         when(loanForProcessing.loanCurrency()).thenReturn(loanCurrency);
         when(loanForProcessing.getLoanProduct()).thenReturn(loanProduct);
-        when(loanProduct.getInstallmentAmountInMultiplesOf()).thenReturn(10);
         when(loanForProcessing.getLoanProductRelatedDetail()).thenReturn(loanProductRelatedDetail);
         when(loanTransactionProcessingService.reprocessLoanTransactions(any(), any(), any(), any(), any(), any()))
                 .thenReturn(changedTransactionDetail);
@@ -198,7 +201,6 @@ public class LoanDownPaymentHandlerServiceImplTest {
                 .notifyPreBusinessEvent(Mockito.any(LoanTransactionDownPaymentPreBusinessEvent.class));
         verify(businessEventNotifierService, Mockito.times(1))
                 .notifyPostBusinessEvent(Mockito.any(LoanTransactionDownPaymentPostBusinessEvent.class));
-        verify(businessEventNotifierService, Mockito.times(1)).notifyPostBusinessEvent(Mockito.any(LoanBalanceChangedBusinessEvent.class));
     }
 
     @Test

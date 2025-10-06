@@ -19,10 +19,7 @@
 package org.apache.fineract.portfolio.loanaccount.service;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -35,7 +32,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.stream.Stream;
 import org.apache.fineract.accounting.journalentry.service.JournalEntryWritePlatformService;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
@@ -61,7 +57,6 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanTransaction;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanTransactionRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.SingleLoanChargeRepaymentScheduleProcessingWrapper;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleType;
-import org.apache.fineract.portfolio.loanaccount.mapper.LoanAccountingBridgeMapper;
 import org.apache.fineract.portfolio.loanaccount.serialization.LoanChargeApiJsonValidator;
 import org.apache.fineract.portfolio.loanaccount.serialization.LoanChargeValidator;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProductRelatedDetail;
@@ -156,9 +151,6 @@ class LoanChargeWritePlatformServiceImplTest {
     private LoanAccountService loanAccountService;
 
     @Mock
-    private LoanAccountingBridgeMapper loanAccountingBridgeMapper;
-
-    @Mock
     private LoanChargeService loanChargeService;
 
     @Mock
@@ -170,6 +162,9 @@ class LoanChargeWritePlatformServiceImplTest {
     @Mock
     private LoanLifecycleStateMachine loanLifecycleStateMachine;
 
+    @Mock
+    private LoanJournalEntryPoster journalEntryPoster;
+
     @BeforeEach
     void setUp() {
         when(loanAssembler.assembleFrom(LOAN_ID)).thenReturn(loan);
@@ -177,7 +172,7 @@ class LoanChargeWritePlatformServiceImplTest {
         when(chargeDefinition.getChargeTimeType()).thenReturn(SPECIFIED_DUE_DATE);
         when(chargeDefinition.getCurrencyCode()).thenReturn(CURRENCY_CODE);
         when(loanChargeAssembler.createNewFromJson(loan, chargeDefinition, jsonCommand)).thenReturn(loanCharge);
-        when(loan.repaymentScheduleDetail()).thenReturn(loanRepaymentScheduleDetail);
+        when(loan.getLoanProductRelatedDetail()).thenReturn(loanRepaymentScheduleDetail);
         when(loanRepaymentScheduleDetail.getLoanScheduleType()).thenReturn(LoanScheduleType.CUMULATIVE);
         when(loan.getLoanRepaymentScheduleDetail()).thenReturn(loanRepaymentScheduleDetail);
         when(loan.hasCurrencyCodeOf(CURRENCY_CODE)).thenReturn(true);
@@ -190,16 +185,12 @@ class LoanChargeWritePlatformServiceImplTest {
         when(loan.getCurrency()).thenReturn(monetaryCurrency);
         when(monetaryCurrency.getCode()).thenReturn(CURRENCY_CODE);
         when(loanAccountService.saveAndFlushLoanWithDataIntegrityViolationChecks(any())).thenReturn(loan);
-        List<Long> existingTransactionIds = new ArrayList<>();
-        List<Long> existingReversedTransactionIds = new ArrayList<>();
-        when(loan.findExistingTransactionIds()).thenReturn(existingTransactionIds);
-        when(loan.findExistingReversedTransactionIds()).thenReturn(existingReversedTransactionIds);
 
         when(loan.getLoanCharges()).thenReturn(new HashSet<>());
         when(loan.getDisbursementDate()).thenReturn(LocalDate.now(ZoneId.systemDefault()));
         when(loan.getRepaymentScheduleInstallments()).thenReturn(new ArrayList<>());
         when(loanChargeService.calculateAmountPercentageAppliedTo(any(Loan.class), any(LoanCharge.class))).thenReturn(BigDecimal.TEN);
-        when(loan.fetchNumberOfInstallmensAfterExceptions()).thenReturn(5);
+        when(loan.fetchNumberOfInstallmentsAfterExceptions()).thenReturn(5);
         when(loan.updateSummaryWithTotalFeeChargesDueAtDisbursement(any(BigDecimal.class))).thenReturn(null);
         when(loan.deriveSumTotalOfChargesDueAtDisbursement()).thenReturn(BigDecimal.ZERO);
         when(loanCharge.getDueLocalDate()).thenReturn(LocalDate.now(ZoneId.systemDefault()));
@@ -209,7 +200,6 @@ class LoanChargeWritePlatformServiceImplTest {
         when(loan.isCashBasedAccountingEnabledOnLoanProduct()).thenReturn(false);
         when(loan.isUpfrontAccrualAccountingEnabledOnLoanProduct()).thenReturn(false);
 
-        when(loanAccountingBridgeMapper.deriveAccountingBridgeData(anyString(), anyList(), anyList(), anyBoolean(), any(Loan.class))).thenReturn(new AccountingBridgeDataDTO());
         doNothing().when(journalEntryWritePlatformService).createJournalEntriesForLoan(any(AccountingBridgeDataDTO.class));
         doNothing().when(loanChargeService).addLoanCharge(any(Loan.class), any(LoanCharge.class));
     }

@@ -18,10 +18,10 @@
  */
 package org.apache.fineract.portfolio.loanaccount.service;
 
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.apache.fineract.infrastructure.core.domain.ExternalId;
 import org.apache.fineract.infrastructure.core.service.Page;
@@ -37,11 +37,13 @@ import org.apache.fineract.portfolio.loanaccount.data.LoanTransactionData;
 import org.apache.fineract.portfolio.loanaccount.data.PaidInAdvanceData;
 import org.apache.fineract.portfolio.loanaccount.data.RepaymentScheduleRelatedLoanData;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
+import org.apache.fineract.portfolio.loanaccount.domain.LoanTransactionRepaymentPeriodData;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanTransactionType;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.data.LoanScheduleData;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.data.OverdueLoanScheduleData;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleType;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.NonNull;
 
 public interface LoanReadPlatformService {
 
@@ -50,11 +52,12 @@ public interface LoanReadPlatformService {
     LoanAccountData fetchRepaymentScheduleData(LoanAccountData accountData);
 
     LoanScheduleData retrieveRepaymentSchedule(Long loanId, RepaymentScheduleRelatedLoanData repaymentScheduleRelatedData,
-            Collection<DisbursementData> disbursementData, boolean isInterestRecalculationEnabled, LoanScheduleType loanScheduleType);
+            Collection<DisbursementData> disbursementData, Collection<LoanTransactionRepaymentPeriodData> capitalizedIncomeData,
+            boolean isInterestRecalculationEnabled, LoanScheduleType loanScheduleType);
 
     Collection<LoanTransactionData> retrieveLoanTransactions(Long loanId);
 
-    org.springframework.data.domain.Page<LoanTransactionData> retrieveLoanTransactions(@NotNull Long loanId,
+    org.springframework.data.domain.Page<LoanTransactionData> retrieveLoanTransactions(@NonNull Long loanId,
             Set<LoanTransactionType> excludedTransactionTypes, Pageable pageable);
 
     LoanAccountData retrieveTemplateWithClientAndProductDetails(Long clientId, Long productId);
@@ -63,7 +66,7 @@ public interface LoanReadPlatformService {
 
     LoanTransactionData retrieveLoanTransactionTemplate(Long loanId);
 
-    LoanTransactionData retrieveLoanTransactionTemplate(Long loanId, LoanTransactionType transactionType);
+    LoanTransactionData retrieveLoanTransactionTemplate(Long loanId, LoanTransactionType transactionType, Long transactionId);
 
     LoanTransactionData retrieveWaiveInterestDetails(Long loanId);
 
@@ -101,6 +104,8 @@ public interface LoanReadPlatformService {
     Integer retriveLoanCounter(Long clientId, Long productId);
 
     Collection<DisbursementData> retrieveLoanDisbursementDetails(Long loanId);
+
+    Map<Long, List<DisbursementData>> retrieveLoanDisbursementDetails(List<Long> loanIds);
 
     DisbursementData retrieveLoanDisbursementDetail(Long loanId, Long disbursementId);
 
@@ -153,4 +158,11 @@ public interface LoanReadPlatformService {
     List<Long> retrieveLoanIdsByExternalIds(List<ExternalId> externalIds);
 
     boolean existsByLoanId(Long loanId);
+
+    LoanTransactionData retrieveManualInterestRefundTemplate(Long loanId, Long targetTransactionId);
+
+    Long getResolvedLoanId(ExternalId loanExternalId);
+
+    Long getResolvedLoanTransactionId(Long transactionId, ExternalId externalTransactionId);
+
 }

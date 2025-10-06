@@ -19,7 +19,6 @@
 package org.apache.fineract.portfolio.loanaccount.service;
 
 import java.time.LocalDate;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanEvent;
@@ -36,11 +35,7 @@ public class LoanRefundService {
     private final LoanTransactionProcessingService loadTransactionProcessingService;
     private final LoanLifecycleStateMachine loanLifecycleStateMachine;
 
-    public void makeRefund(final Loan loan, final LoanTransaction loanTransaction, final List<Long> existingTransactionIds,
-            final List<Long> existingReversedTransactionIds) {
-        existingTransactionIds.addAll(loan.findExistingTransactionIds());
-        existingReversedTransactionIds.addAll(loan.findExistingReversedTransactionIds());
-
+    public void makeRefund(final Loan loan, final LoanTransaction loanTransaction) {
         loanRefundValidator.validateTransferRefund(loan, loanTransaction);
 
         loanTransaction.updateLoan(loan);
@@ -57,21 +52,12 @@ public class LoanRefundService {
         return loanTransactionDate;
     }
 
-    public void makeRefundForActiveLoan(final Loan loan, final LoanTransaction loanTransaction, final List<Long> existingTransactionIds,
-            final List<Long> existingReversedTransactionIds) {
-        existingTransactionIds.addAll(loan.findExistingTransactionIds());
-        existingReversedTransactionIds.addAll(loan.findExistingReversedTransactionIds());
-
+    public void makeRefundForActiveLoan(final Loan loan, final LoanTransaction loanTransaction) {
         handleRefundTransaction(loan, loanTransaction);
     }
 
-    public void creditBalanceRefund(final Loan loan, final LoanTransaction newCreditBalanceRefundTransaction,
-            final List<Long> existingTransactionIds, final List<Long> existingReversedTransactionIds) {
+    public void creditBalanceRefund(final Loan loan, final LoanTransaction newCreditBalanceRefundTransaction) {
         loanRefundValidator.validateCreditBalanceRefund(loan, newCreditBalanceRefundTransaction);
-
-        existingTransactionIds.addAll(loan.findExistingTransactionIds());
-        existingReversedTransactionIds.addAll(loan.findExistingReversedTransactionIds());
-
         loan.getLoanTransactions().add(newCreditBalanceRefundTransaction);
 
         loanLifecycleStateMachine.determineAndTransition(loan, newCreditBalanceRefundTransaction.getTransactionDate());

@@ -50,6 +50,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.fineract.cob.data.LoanDataForExternalTransfer;
+import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.domain.ExternalId;
@@ -66,7 +67,6 @@ import org.apache.fineract.investor.exception.ExternalAssetOwnerInitiateTransfer
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanStatus;
 import org.apache.fineract.portfolio.loanaccount.exception.LoanNotFoundException;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -132,7 +132,7 @@ public class ExternalAssetOwnersWriteServiceTest {
         when(testContext.delayedSettlementAttributeService.isEnabled(testContext.loanProductId)).thenReturn(false);
 
         // when
-        ExternalAssetOwnerInitiateTransferException thrownException = Assert.assertThrows(ExternalAssetOwnerInitiateTransferException.class,
+        ExternalAssetOwnerInitiateTransferException thrownException = assertThrows(ExternalAssetOwnerInitiateTransferException.class,
                 () -> testContext.externalAssetOwnersWriteServiceImpl.intermediarySaleLoanByLoanId(command));
 
         // then
@@ -160,7 +160,7 @@ public class ExternalAssetOwnersWriteServiceTest {
                 any(LocalDate.class))).thenReturn(externalAssetOwnerTransferList);
 
         // when
-        ExternalAssetOwnerInitiateTransferException thrownException = Assert.assertThrows(ExternalAssetOwnerInitiateTransferException.class,
+        ExternalAssetOwnerInitiateTransferException thrownException = assertThrows(ExternalAssetOwnerInitiateTransferException.class,
                 () -> testContext.externalAssetOwnersWriteServiceImpl.intermediarySaleLoanByLoanId(command));
 
         // then
@@ -356,7 +356,7 @@ public class ExternalAssetOwnersWriteServiceTest {
         when(testContext.delayedSettlementAttributeService.isEnabled(testContext.loanProductId)).thenReturn(true);
 
         // when
-        ExternalAssetOwnerInitiateTransferException thrownException = Assert.assertThrows(ExternalAssetOwnerInitiateTransferException.class,
+        ExternalAssetOwnerInitiateTransferException thrownException = assertThrows(ExternalAssetOwnerInitiateTransferException.class,
                 () -> testContext.externalAssetOwnersWriteServiceImpl.intermediarySaleLoanByLoanId(command));
 
         // then
@@ -419,8 +419,8 @@ public class ExternalAssetOwnersWriteServiceTest {
     }
 
     private static Stream<Arguments> loanStatusValidationDataProviderInvalidDelayedSettlement() {
-        return Stream.of(Arguments.of("Invalid Loan Status", LoanStatus.INVALID), Arguments.of("Approved Loan Status", LoanStatus.APPROVED),
-                Arguments.of("Rejected Loan Status", LoanStatus.REJECTED),
+        return Stream.of(Arguments.of("Invalid Loan Status", LoanStatus.INVALID), Arguments.of("Rejected Loan Status", LoanStatus.REJECTED),
+                Arguments.of("Approved Loan Status", LoanStatus.APPROVED),
                 Arguments.of("Submitted and Pending Approval Loan Status", LoanStatus.SUBMITTED_AND_PENDING_APPROVAL),
                 Arguments.of("Withdrawn By Client Loan Status", LoanStatus.WITHDRAWN_BY_CLIENT),
                 Arguments.of("Closed Written Off Loan Status", LoanStatus.CLOSED_WRITTEN_OFF),
@@ -861,6 +861,12 @@ public class ExternalAssetOwnersWriteServiceTest {
         @Mock
         private LoanDataForExternalTransfer loanDataForExternalTransfer;
 
+        @Mock
+        private ConfigurationDomainService configurationDomainService;
+
+        @Mock
+        private ExternalAssetOwnersReadService externalAssetOwnersReadService;
+
         @InjectMocks
         private ExternalAssetOwnersWriteServiceImpl externalAssetOwnersWriteServiceImpl;
 
@@ -927,6 +933,12 @@ public class ExternalAssetOwnersWriteServiceTest {
             lenient().when(loanDataForExternalTransfer.getLoanStatus()).thenReturn(LoanStatus.ACTIVE);
             lenient().when(loanDataForExternalTransfer.getLoanProductId()).thenReturn(loanProductId);
             lenient().when(loanDataForExternalTransfer.getLoanProductShortName()).thenReturn(loanProductShortName);
+            lenient().when(configurationDomainService.getAllowedLoanStatusesForExternalAssetTransfer())
+                    .thenReturn(List.of("ACTIVE", "TRANSFER_IN_PROGRESS", "TRANSFER_ON_HOLD"));
+            lenient().when(configurationDomainService.getAllowedLoanStatusesOfDelayedSettlementForExternalAssetTransfer())
+                    .thenReturn(List.of("ACTIVE", "TRANSFER_IN_PROGRESS", "TRANSFER_ON_HOLD", "OVERPAID", "CLOSED_OBLIGATIONS_MET"));
+            lenient().when(externalAssetOwnersReadService.retrieveActiveTransferData(any(Long.class), any(), any())).thenReturn(null);
+
         }
     }
 }

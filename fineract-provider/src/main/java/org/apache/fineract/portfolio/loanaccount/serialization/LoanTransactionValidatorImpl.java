@@ -35,6 +35,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.fineract.infrastructure.codes.domain.CodeValue;
+import org.apache.fineract.infrastructure.codes.domain.CodeValueRepository;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
@@ -67,6 +69,7 @@ import org.apache.fineract.portfolio.common.service.Validator;
 import org.apache.fineract.portfolio.group.domain.Group;
 import org.apache.fineract.portfolio.group.exception.GroupNotActiveException;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
+import org.apache.fineract.portfolio.loanaccount.api.LoanTransactionApiConstants;
 import org.apache.fineract.portfolio.loanaccount.data.HolidayDetailDTO;
 import org.apache.fineract.portfolio.loanaccount.data.ScheduleGeneratorDTO;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
@@ -90,7 +93,7 @@ import org.apache.fineract.portfolio.loanaccount.exception.LoanRepaymentSchedule
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleType;
 import org.apache.fineract.portfolio.loanaccount.service.LoanUtilService;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
-import org.jetbrains.annotations.NotNull;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component("loanTransactionValidator")
@@ -106,6 +109,8 @@ public final class LoanTransactionValidatorImpl implements LoanTransactionValida
     private final EntityDatatableChecksWritePlatformService entityDatatableChecksWritePlatformService;
     private final CalendarInstanceRepository calendarInstanceRepository;
     private final LoanDownPaymentTransactionValidator loanDownPaymentTransactionValidator;
+    private final LoanDisbursementValidator loanDisbursementValidator;
+    private final CodeValueRepository codeValueRepository;
 
     private void throwExceptionIfValidationWarningsExist(final List<ApiParameterError> dataValidationErrors) {
         if (!dataValidationErrors.isEmpty()) {
@@ -157,6 +162,9 @@ public final class LoanTransactionValidatorImpl implements LoanTransactionValida
             validateLoanClientIsActive(loan);
             validateLoanGroupIsActive(loan);
 
+            final BigDecimal disbursedAmount = loan.getSummary().getTotalPrincipalDisbursed();
+            loanDisbursementValidator.compareDisbursedToApprovedOrProposedPrincipal(loan, principal, disbursedAmount);
+
             if (loan.isChargedOff()) {
                 throw new GeneralPlatformDomainRuleException("error.msg.loan.disbursal.not.allowed.on.charged.off",
                         "Loan: " + loan.getId() + " disbursement is not allowed on charged-off loan.");
@@ -173,7 +181,6 @@ public final class LoanTransactionValidatorImpl implements LoanTransactionValida
                 baseDataValidator.getDataValidationErrors().add(error);
             }
 
-            final BigDecimal disbursedAmount = loan.getDisbursedAmount();
             final Set<LoanCollateralManagement> loanCollateralManagements = loan.getLoanCollateralManagements();
 
             if ((loanCollateralManagements != null && !loanCollateralManagements.isEmpty()) && loan.getLoanType().isIndividualAccount()) {
@@ -912,7 +919,7 @@ public final class LoanTransactionValidatorImpl implements LoanTransactionValida
         }
     }
 
-    private static @NotNull BigDecimal collectTotalCollateral(Set<LoanCollateralManagement> loanCollateralManagements) {
+    private static @NonNull BigDecimal collectTotalCollateral(Set<LoanCollateralManagement> loanCollateralManagements) {
         BigDecimal totalCollateral = BigDecimal.ZERO;
 
         for (LoanCollateralManagement loanCollateralManagement : loanCollateralManagements) {
@@ -924,7 +931,7 @@ public final class LoanTransactionValidatorImpl implements LoanTransactionValida
         return totalCollateral;
     }
 
-    private static @NotNull Set<String> getDisbursementParameters(boolean isAccountTransfer) {
+    private static @NonNull Set<String> getDisbursementParameters(boolean isAccountTransfer) {
         Set<String> disbursementParameters;
 
         if (isAccountTransfer) {
@@ -945,9 +952,9 @@ public final class LoanTransactionValidatorImpl implements LoanTransactionValida
             throw new InvalidJsonException();
         }
 
-        final Set<String> transactionParameters = new HashSet<>(
-                Arrays.asList("transactionDate", "transactionAmount", "externalId", "note", "locale", "dateFormat", "paymentTypeId",
-                        "accountNumber", "checkNumber", "routingCode", "receiptNumber", "bankNumber", "loanId"));
+        final Set<String> transactionParameters = new HashSet<>(Arrays.asList("transactionDate", "transactionAmount", "externalId", "note",
+                "locale", "dateFormat", "paymentTypeId", "accountNumber", "checkNumber", "routingCode", "receiptNumber", "bankNumber",
+                "loanId", "numberOfRepayments", "interestRefundCalculation"));
 
         final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, transactionParameters);
@@ -1076,6 +1083,59 @@ public final class LoanTransactionValidatorImpl implements LoanTransactionValida
         final String externalId = this.fromApiJsonHelper.extractStringNamed("externalId", element);
         if (StringUtils.isNotBlank(externalId)) {
             baseDataValidator.reset().parameter("externalId").value(externalId).notExceedingLengthOf(100);
+        }
+    }
+
+    @Override
+    public void validateReversalExternalId(final DataValidatorBuilder baseDataValidator, final JsonElement element) {
+        final String reversalExternalId = this.fromApiJsonHelper.extractStringNamed("reversalExternalId", element);
+        if (StringUtils.isNotBlank(reversalExternalId)) {
+            baseDataValidator.reset().parameter("reversalExternalId").value(reversalExternalId).notExceedingLengthOf(100);
+        }
+    }
+
+    @Override
+    public void validateManualInterestRefundTransaction(final String json) {
+        if (StringUtils.isBlank(json)) {
+            throw new InvalidJsonException();
+        }
+
+        final Set<String> transactionParameters = new HashSet<>(
+                Arrays.asList("transactionAmount", "externalId", "note", "locale", "dateFormat", "paymentTypeId", "accountNumber",
+                        "checkNumber", "routingCode", "receiptNumber", "bankNumber", "loanId", "numberOfRepayments"));
+
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, transactionParameters);
+
+        final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("loan.transaction");
+
+        final JsonElement element = this.fromApiJsonHelper.parse(json);
+
+        final BigDecimal transactionAmount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed("transactionAmount", element);
+        baseDataValidator.reset().parameter("transactionAmount").value(transactionAmount).notNull().positiveAmount();
+
+        final String note = this.fromApiJsonHelper.extractStringNamed("note", element);
+        baseDataValidator.reset().parameter("note").value(note).notExceedingLengthOf(1000);
+
+        final String externalId = this.fromApiJsonHelper.extractStringNamed("externalId", element);
+        baseDataValidator.reset().parameter("externalId").value(externalId).ignoreIfNull().notExceedingLengthOf(100);
+
+        validatePaymentDetails(baseDataValidator, element);
+        throwExceptionIfValidationWarningsExist(dataValidationErrors);
+    }
+
+    @Override
+    public void validateClassificationCodeValue(final String codeName, final Long transactionClassificationId,
+            DataValidatorBuilder baseDataValidator) {
+        baseDataValidator.reset().parameter(LoanTransactionApiConstants.TRANSACTION_CLASSIFICATIONID_PARAMNAME)
+                .value(transactionClassificationId).ignoreIfNull().positiveAmount();
+        if (transactionClassificationId != null) {
+            final CodeValue codeValue = codeValueRepository.findByCodeNameAndId(codeName, transactionClassificationId);
+            if (codeValue == null) {
+                baseDataValidator.reset().parameter(LoanTransactionApiConstants.TRANSACTION_CLASSIFICATIONID_PARAMNAME)
+                        .failWithCode("code.value.classification.not.exists", "Code value does not exists in the code " + codeName);
+            }
         }
     }
 }
